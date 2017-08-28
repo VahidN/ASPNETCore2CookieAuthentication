@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ASPNETCore2CookieAuthentication.Services\ASPNETCore2CookieAuthentication.Services.csproj" />
+    <ProjectReference Include="..\ASPNETCore2CookieAuthentication.DomainClasses\ASPNETCore2CookieAuthentication.DomainClasses.csproj" />
+    <ProjectReference Include="..\ASPNETCore2CookieAuthentication.Common\ASPNETCore2CookieAuthentication.Common.csproj" />
+    <ProjectReference Include="..\ASPNETCore2CookieAuthentication.DataLayer\ASPNETCore2CookieAuthentication.DataLayer.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.4.337" />
+    <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="2.0.0" />
+  </ItemGroup>
+  <Target Name="PrecompileScript" BeforeTargets="BeforeBuild">
+    <Exec Command="dotnet bundle" />
+  </Target>
+</Project>
