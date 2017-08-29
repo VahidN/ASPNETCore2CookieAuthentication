@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ASPNETCore2CookieAuthentica
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ASPNETCore2CookieAuthentication.DataLayer", "src\ASPNETCore2CookieAuthentication.DataLayer\ASPNETCore2CookieAuthentication.DataLayer.csproj", "{40AE4F92-F6EA-479A-AC6C-A8A0ABECA619}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ASPNETCore2CookieAuthentication.Common", "src\ASPNETCore2CookieAuthentication.Common\ASPNETCore2CookieAuthentication.Common.csproj", "{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,18 @@ Global
 		{40AE4F92-F6EA-479A-AC6C-A8A0ABECA619}.Release|x64.Build.0 = Release|Any CPU
 		{40AE4F92-F6EA-479A-AC6C-A8A0ABECA619}.Release|x86.ActiveCfg = Release|Any CPU
 		{40AE4F92-F6EA-479A-AC6C-A8A0ABECA619}.Release|x86.Build.0 = Release|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Debug|x64.Build.0 = Debug|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Debug|x86.Build.0 = Debug|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Release|x64.ActiveCfg = Release|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Release|x64.Build.0 = Release|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Release|x86.ActiveCfg = Release|Any CPU
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,5 +93,6 @@ Global
 		{F21D2BB4-ABA5-4AAD-BE37-0F077A94BF3B} = {71A2662C-DEC6-47FF-9835-E6F83F66E766}
 		{7A1C27BA-7430-463D-AE3E-0C949AF121DB} = {71A2662C-DEC6-47FF-9835-E6F83F66E766}
 		{40AE4F92-F6EA-479A-AC6C-A8A0ABECA619} = {71A2662C-DEC6-47FF-9835-E6F83F66E766}
+		{E95BA8CD-F7FB-4DE5-BEC6-B21AB932EBC3} = {71A2662C-DEC6-47FF-9835-E6F83F66E766}
 	EndGlobalSection
 EndGlobal
