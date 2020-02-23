@@ -46,7 +46,7 @@ namespace ASPNETCore2CookieAuthentication.WebApp.Controllers
             }
 
             var user = await _usersService.FindUserAsync(loginUser.Username, loginUser.Password).ConfigureAwait(false);
-            if (user == null || !user.IsActive)
+            if (user?.IsActive != true)
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return Unauthorized();

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace ASPNETCore2CookieAuthentication.WebApp
 {
@@ -85,9 +86,10 @@ namespace ASPNETCore2CookieAuthentication.WebApp
             {
                 options.AddPolicy("CorsPolicy",
                     builder => builder
-                        .AllowAnyOrigin()
+                        .WithOrigins("http://localhost:4200") //Note:  The URL must be specified without a trailing slash (/).
                         .AllowAnyMethod()
                         .AllowAnyHeader()
+                        .SetIsOriginAllowed((host) => true)
                         .AllowCredentials());
             });
 
@@ -95,40 +97,8 @@ namespace ASPNETCore2CookieAuthentication.WebApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // Application level exception handler here - this is just a place holder
-                app.UseExceptionHandler(errorApp => errorApp.Run(async (context) =>
-                {
-                    context.Response.StatusCode = 500;
-                    context.Response.ContentType = "text/html";
-                    await context.Response.WriteAsync("<html><body>\r\n");
-                    await context.Response.WriteAsync(
-                            "We're sorry, we encountered an un-expected issue with your application.<br>\r\n");
-
-                    // Capture the exception
-                    var error = context.Features.Get<IExceptionHandlerFeature>();
-                    if (error != null)
-                    {
-                        // This error would not normally be exposed to the client
-                        await context.Response.WriteAsync("<br>Error: " +
-                                        HtmlEncoder.Default.Encode(error.Error.Message) +
-                                        "<br>\r\n");
-                    }
-                    await context.Response.WriteAsync("<br><a href=\"/\">Home</a><br>\r\n");
-                    await context.Response.WriteAsync("</body></html>\r\n");
-                    await context.Response.WriteAsync(new string(' ', 512)); // Padding for IE
-                }));
-            }
-
-            app.UseAuthentication();
-
             var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
             using (var scope = scopeFactory.CreateScope())
             {
@@ -137,15 +107,52 @@ namespace ASPNETCore2CookieAuthentication.WebApp
                 dbInitializer.SeedData();
             }
 
+            if (!env.IsDevelopment())
+            {
+                app.UseHsts();
+            }
+            app.UseHttpsRedirection();
+
+            // Application level exception handler here - this is just a place holder
+            app.UseExceptionHandler(errorApp => errorApp.Run(async (context) =>
+            {
+                context.Response.StatusCode = 500;
+                context.Response.ContentType = "text/html";
+                await context.Response.WriteAsync("<html><body>\r\n");
+                await context.Response.WriteAsync(
+                        "We're sorry, we encountered an un-expected issue with your application.<br>\r\n");
+
+                // Capture the exception
+                var error = context.Features.Get<IExceptionHandlerFeature>();
+                if (error != null)
+                {
+                    // This error would not normally be exposed to the client
+                    await context.Response.WriteAsync("<br>Error: " +
+                                HtmlEncoder.Default.Encode(error.Error.Message) +
+                                "<br>\r\n");
+                }
+                await context.Response.WriteAsync("<br><a href=\"/\">Home</a><br>\r\n");
+                await context.Response.WriteAsync("</body></html>\r\n");
+                await context.Response.WriteAsync(new string(' ', 512)); // Padding for IE
+            }));
+
             app.UseStatusCodePages();
-            app.UseDefaultFiles(); // so index.html is not required
+
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseCors("CorsPolicy");
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
+                endpoints.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
             // catch-all handler for HTML5 client routes - serve index.html

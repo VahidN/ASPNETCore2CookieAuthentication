@@ -1,9 +1,7 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ASPNETCore2CookieAuthentication.Common;
-using ASPNETCore2CookieAuthentication.DomainClasses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -25,8 +23,6 @@ namespace ASPNETCore2CookieAuthentication.Services
 
         public async Task ValidateAsync(CookieValidatePrincipalContext context)
         {
-            var userPrincipal = context.Principal;
-
             var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
             if (claimsIdentity?.Claims == null || !claimsIdentity.Claims.Any())
             {

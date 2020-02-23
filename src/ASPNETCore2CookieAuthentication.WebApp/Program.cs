@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace ASPNETCore2CookieAuthentication.WebApp
 {
@@ -14,34 +7,14 @@ namespace ASPNETCore2CookieAuthentication.WebApp
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                        .UseKestrel()
-                        .UseContentRoot(Directory.GetCurrentDirectory())
-                        .ConfigureAppConfiguration((hostingContext, config) =>
-                        {
-                            var env = hostingContext.HostingEnvironment;
-                            config.SetBasePath(env.ContentRootPath);
-                            config.AddInMemoryCollection(new[]
-                                {
-                                                new KeyValuePair<string,string>("the-key", "the-value")
-                                })
-                                .AddJsonFile("appsettings.json", reloadOnChange: true, optional: false)
-                                .AddJsonFile($"appsettings.{env}.json", optional: true)
-                                .AddEnvironmentVariables();
-                        })
-                        .ConfigureLogging((hostingContext, logging) =>
-                        {
-                            logging.AddDebug();
-                            logging.AddConsole();
-                        })
-                        .UseIISIntegration()
-                        .UseDefaultServiceProvider((context, options) =>
-                        {
-                            options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
-                        })
-                        .UseStartup<Startup>()
-                        .Build();
-            host.Run();
+            CreateHostBuilder(args).Build().Run();
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

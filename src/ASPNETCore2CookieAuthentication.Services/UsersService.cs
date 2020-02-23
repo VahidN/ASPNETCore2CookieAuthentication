@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ASPNETCore2CookieAuthentication.Common;
 using ASPNETCore2CookieAuthentication.DataLayer.Context;
@@ -13,7 +11,7 @@ namespace ASPNETCore2CookieAuthentication.Services
     {
         Task<string> GetSerialNumberAsync(int userId);
         Task<User> FindUserAsync(string username, string password);
-        Task<User> FindUserAsync(int userId);
+        ValueTask<User> FindUserAsync(int userId);
         Task UpdateUserLastActivityDateAsync(int userId);
     }
 
@@ -34,7 +32,7 @@ namespace ASPNETCore2CookieAuthentication.Services
             _securityService.CheckArgumentIsNull(nameof(_securityService));
         }
 
-        public Task<User> FindUserAsync(int userId)
+        public ValueTask<User> FindUserAsync(int userId)
         {
             return _users.FindAsync(userId);
         }
