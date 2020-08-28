@@ -47,7 +47,7 @@ namespace ASPNETCore2CookieAuthentication.Services
                                  from user in role.UserRoles
                                  where user.UserId == userId
                                  select role;
-            var userRole = await userRolesQuery.FirstOrDefaultAsync().ConfigureAwait(false);
+            var userRole = await userRolesQuery.FirstOrDefaultAsync();
             return userRole != null;
         }
 

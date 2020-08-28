@@ -45,7 +45,7 @@ namespace ASPNETCore2CookieAuthentication.WebApp.Controllers
                 return BadRequest("user is not set.");
             }
 
-            var user = await _usersService.FindUserAsync(loginUser.Username, loginUser.Password).ConfigureAwait(false);
+            var user = await _usersService.FindUserAsync(loginUser.Username, loginUser.Password);
             if (user?.IsActive != true)
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -53,7 +53,7 @@ namespace ASPNETCore2CookieAuthentication.WebApp.Controllers
             }
 
             var loginCookieExpirationDays = _configuration.GetValue<int>("LoginCookieExpirationDays", defaultValue: 30);
-            var cookieClaims = await createCookieClaimsAsync(user).ConfigureAwait(false);
+            var cookieClaims = await createCookieClaimsAsync(user);
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 cookieClaims,
@@ -64,7 +64,7 @@ namespace ASPNETCore2CookieAuthentication.WebApp.Controllers
                     ExpiresUtc = DateTimeOffset.UtcNow.AddDays(loginCookieExpirationDays)
                 });
 
-            await _usersService.UpdateUserLastActivityDateAsync(user.Id).ConfigureAwait(false);
+            await _usersService.UpdateUserLastActivityDateAsync(user.Id);
 
             return Ok();
         }
@@ -83,7 +83,7 @@ namespace ASPNETCore2CookieAuthentication.WebApp.Controllers
             identity.AddClaim(new Claim(ClaimTypes.UserData, user.Id.ToString()));
 
             // add roles
-            var roles = await _rolesService.FindUserRolesAsync(user.Id).ConfigureAwait(false);
+            var roles = await _rolesService.FindUserRolesAsync(user.Id);
             foreach (var role in roles)
             {
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));

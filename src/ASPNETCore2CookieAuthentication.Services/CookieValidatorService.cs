@@ -47,14 +47,14 @@ namespace ASPNETCore2CookieAuthentication.Services
                 return;
             }
 
-            var user = await _usersService.FindUserAsync(userId).ConfigureAwait(false);
+            var user = await _usersService.FindUserAsync(userId);
             if (user == null || user.SerialNumber != serialNumberClaim.Value || !user.IsActive)
             {
                 // user has changed his/her password/roles/stat/IsActive
                 await handleUnauthorizedRequest(context);
             }
 
-            await _usersService.UpdateUserLastActivityDateAsync(userId).ConfigureAwait(false);
+            await _usersService.UpdateUserLastActivityDateAsync(userId);
         }
 
         private Task handleUnauthorizedRequest(CookieValidatePrincipalContext context)

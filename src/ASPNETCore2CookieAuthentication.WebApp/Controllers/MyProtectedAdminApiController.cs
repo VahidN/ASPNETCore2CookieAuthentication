@@ -31,7 +31,7 @@ namespace ASPNETCore2CookieAuthentication.WebApp.Controllers
                 Title = "Hello from My Protected Admin Api Controller!",
                 Username = this.User.Identity.Name,
                 UserData = userId,
-                TokenSerialNumber = await _usersService.GetSerialNumberAsync(int.Parse(userId)).ConfigureAwait(false)
+                TokenSerialNumber = await _usersService.GetSerialNumberAsync(int.Parse(userId))
             });
         }
     }
