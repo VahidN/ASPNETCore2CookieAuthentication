@@ -1,24 +1,13 @@
-using System;
-using System.Security.Cryptography;
 using System.Text;
 
-namespace ASPNETCore2CookieAuthentication.Services
-{
-    public interface ISecurityService
-    {
-        string GetSha256Hash(string input);
-    }
+namespace ASPNETCore2CookieAuthentication.Services;
 
-    public class SecurityService : ISecurityService
+public class SecurityService : ISecurityService
+{
+    public string GetSha256Hash(string input)
     {
-        public string GetSha256Hash(string input)
-        {
-            using (var hashAlgorithm = new SHA256CryptoServiceProvider())
-            {
-                var byteValue = Encoding.UTF8.GetBytes(input);
-                var byteHash = hashAlgorithm.ComputeHash(byteValue);
-                return Convert.ToBase64String(byteHash);
-            }
-        }
+        var byteValue = Encoding.UTF8.GetBytes(input);
+        var byteHash = SHA256.HashData(byteValue);
+        return Convert.ToBase64String(byteHash);
     }
 }

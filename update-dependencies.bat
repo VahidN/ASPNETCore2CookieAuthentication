@@ -1,4 +1,5 @@
-dotnet tool update -g dotnet-outdated
-dotnet outdated -u
+dotnet restore
+dotnet tool update --global dotnet-outdated-tool
+dotnet outdated
 dotnet restore
 pause

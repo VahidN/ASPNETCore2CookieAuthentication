@@ -1,91 +1,72 @@
-using System;
-using System.Linq;
-using ASPNETCore2CookieAuthentication.Common;
 using ASPNETCore2CookieAuthentication.DataLayer.Context;
 using ASPNETCore2CookieAuthentication.DomainClasses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ASPNETCore2CookieAuthentication.Services
-{
-    public interface IDbInitializerService
-    {
-        /// <summary>
-        /// Applies any pending migrations for the context to the database.
-        /// Will create the database if it does not already exist.
-        /// </summary>
-        void Initialize();
+namespace ASPNETCore2CookieAuthentication.Services;
 
-        /// <summary>
-        /// Adds some default values to the Db
-        /// </summary>
-        void SeedData();
+public class DbInitializerService : IDbInitializerService
+{
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ISecurityService _securityService;
+
+    public DbInitializerService(
+        IServiceScopeFactory scopeFactory,
+        ISecurityService securityService)
+    {
+        _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
+        _securityService = securityService ?? throw new ArgumentNullException(nameof(securityService));
     }
 
-    public class DbInitializerService : IDbInitializerService
+    public void Initialize()
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ISecurityService _securityService;
-
-        public DbInitializerService(
-            IServiceScopeFactory scopeFactory,
-            ISecurityService securityService)
+        using var serviceScope = _scopeFactory.CreateScope();
+        using var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+        if (context is null)
         {
-            _scopeFactory = scopeFactory;
-            _scopeFactory.CheckArgumentIsNull(nameof(_scopeFactory));
-
-            _securityService = securityService;
-            _securityService.CheckArgumentIsNull(nameof(_securityService));
+            throw new InvalidOperationException("context is null");
         }
 
-        public void Initialize()
+        context.Database.Migrate();
+    }
+
+    public void SeedData()
+    {
+        using var serviceScope = _scopeFactory.CreateScope();
+        using var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+        if (context is null)
         {
-            using (var serviceScope = _scopeFactory.CreateScope())
-            {
-                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
-                {
-                    context.Database.Migrate();
-                }
-            }
+            throw new InvalidOperationException("context is null");
         }
 
-        public void SeedData()
+        // Add default roles
+        var adminRole = new Role { Name = CustomRoles.Admin };
+        var userRole = new Role { Name = CustomRoles.User };
+        if (!context.Roles.Any())
         {
-            using (var serviceScope = _scopeFactory.CreateScope())
+            context.Add(adminRole);
+            context.Add(userRole);
+            context.SaveChanges();
+        }
+
+        // Add Admin user
+        if (!context.Users.Any())
+        {
+            var adminUser = new User
             {
-                using (var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>())
-                {
-                    // Add default roles
-                    var adminRole = new Role { Name = CustomRoles.Admin };
-                    var userRole = new Role { Name = CustomRoles.User };
-                    if (!context.Roles.Any())
-                    {
-                        context.Add(adminRole);
-                        context.Add(userRole);
-                        context.SaveChanges();
-                    }
+                Username = "Vahid",
+                DisplayName = "وحيد",
+                IsActive = true,
+                LastLoggedIn = null,
+                Password = _securityService.GetSha256Hash("1234"),
+                SerialNumber = Guid.NewGuid().ToString("N")
+            };
+            context.Add(adminUser);
+            context.SaveChanges();
 
-                    // Add Admin user
-                    if (!context.Users.Any())
-                    {
-                        var adminUser = new User
-                        {
-                            Username = "Vahid",
-                            DisplayName = "وحيد",
-                            IsActive = true,
-                            LastLoggedIn = null,
-                            Password = _securityService.GetSha256Hash("1234"),
-                            SerialNumber = Guid.NewGuid().ToString("N")
-                        };
-                        context.Add(adminUser);
-                        context.SaveChanges();
-
-                        context.Add(new UserRole { Role = adminRole, User = adminUser });
-                        context.Add(new UserRole { Role = userRole, User = adminUser });
-                        context.SaveChanges();
-                    }
-                }
-            }
+            context.Add(new UserRole { Role = adminRole, User = adminUser });
+            context.Add(new UserRole { Role = userRole, User = adminUser });
+            context.SaveChanges();
         }
     }
 }

@@ -1,20 +1,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ASPNETCore2CookieAuthentication.WebApp.Controllers
+namespace ASPNETCore2CookieAuthentication.WebApp.Controllers;
+
+[Route("api/[controller]"), Authorize]
+public class MyProtectedApiController : Controller
 {
-    [Route("api/[controller]")]
-    [Authorize]
-    public class MyProtectedApiController : Controller
+    public IActionResult Get()
     {
-        public IActionResult Get()
+        return Ok(new
         {
-            return Ok(new
-            {
-                Id = 1,
-                Title = "Hello from My Protected Controller!",
-                Username = this.User.Identity.Name
-            });
-        }
+            Id = 1,
+            Title = "Hello from My Protected Controller!",
+            Username = User.Identity?.Name
+        });
     }
 }

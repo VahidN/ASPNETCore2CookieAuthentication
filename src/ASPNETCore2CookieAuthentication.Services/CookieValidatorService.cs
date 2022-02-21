@@ -1,66 +1,63 @@
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using ASPNETCore2CookieAuthentication.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace ASPNETCore2CookieAuthentication.Services
+namespace ASPNETCore2CookieAuthentication.Services;
+
+public class CookieValidatorService : ICookieValidatorService
 {
-    public interface ICookieValidatorService
+    private readonly IUsersService _usersService;
+
+    public CookieValidatorService(IUsersService usersService)
     {
-        Task ValidateAsync(CookieValidatePrincipalContext context);
+        _usersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
     }
 
-    public class CookieValidatorService : ICookieValidatorService
+    public async Task ValidateAsync(CookieValidatePrincipalContext context)
     {
-        private readonly IUsersService _usersService;
-        public CookieValidatorService(IUsersService usersService)
+        if (context == null)
         {
-            _usersService = usersService;
-            _usersService.CheckArgumentIsNull(nameof(usersService));
+            throw new ArgumentNullException(nameof(context));
         }
 
-        public async Task ValidateAsync(CookieValidatePrincipalContext context)
+        var claimsIdentity = context.Principal?.Identity as ClaimsIdentity;
+        if (claimsIdentity?.Claims == null || !claimsIdentity.Claims.Any())
         {
-            var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
-            if (claimsIdentity?.Claims == null || !claimsIdentity.Claims.Any())
-            {
-                // this is not our issued cookie
-                await handleUnauthorizedRequest(context);
-                return;
-            }
-
-            var serialNumberClaim = claimsIdentity.FindFirst(ClaimTypes.SerialNumber);
-            if (serialNumberClaim == null)
-            {
-                // this is not our issued cookie
-                await handleUnauthorizedRequest(context);
-                return;
-            }
-
-            var userIdString = claimsIdentity.FindFirst(ClaimTypes.UserData).Value;
-            if (!int.TryParse(userIdString, out int userId))
-            {
-                // this is not our issued cookie
-                await handleUnauthorizedRequest(context);
-                return;
-            }
-
-            var user = await _usersService.FindUserAsync(userId);
-            if (user == null || user.SerialNumber != serialNumberClaim.Value || !user.IsActive)
-            {
-                // user has changed his/her password/roles/stat/IsActive
-                await handleUnauthorizedRequest(context);
-            }
-
-            await _usersService.UpdateUserLastActivityDateAsync(userId);
+            // this is not our issued cookie
+            await handleUnauthorizedRequest(context);
+            return;
         }
 
-        private Task handleUnauthorizedRequest(CookieValidatePrincipalContext context)
+        var serialNumberClaim = claimsIdentity.FindFirst(ClaimTypes.SerialNumber);
+        if (serialNumberClaim == null)
         {
-            context.RejectPrincipal();
-            return context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            // this is not our issued cookie
+            await handleUnauthorizedRequest(context);
+            return;
         }
+
+        var userIdString = claimsIdentity.FindFirst(ClaimTypes.UserData)?.Value;
+        if (!int.TryParse(userIdString, NumberStyles.Number, CultureInfo.InvariantCulture, out var userId))
+        {
+            // this is not our issued cookie
+            await handleUnauthorizedRequest(context);
+            return;
+        }
+
+        var user = await _usersService.FindUserAsync(userId);
+        if (user == null || !string.Equals(user.SerialNumber, serialNumberClaim.Value, StringComparison.Ordinal) ||
+            !user.IsActive)
+        {
+            // user has changed his/her password/roles/stat/IsActive
+            await handleUnauthorizedRequest(context);
+        }
+
+        await _usersService.UpdateUserLastActivityDateAsync(userId);
+    }
+
+    private static Task handleUnauthorizedRequest(CookieValidatePrincipalContext context)
+    {
+        context.RejectPrincipal();
+        return context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }
