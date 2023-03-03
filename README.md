@@ -14,7 +14,7 @@ A cookie based authentication sample for ASP.NET Core 7x without using the Ident
 
 - Users and Roles tables with a many-to-may relationship.
 - A separated EF Core data layer with enabled migrations.
-- An EF Core 6.0.102 based service layer.
+- An EF Core 7x based service layer.
 - A Db initializer to seed the default database values.
 - An account controller with cookie and DB based login and logout capabilities.
 - 2 sample API controllers to show how user-roles can be applied and used.
