@@ -1,8 +1,34 @@
+# Code files
+[*.{cs,csx,vb,vbx,razor,html,htm,js,md,cshtml,xaml,vbhtml,aspx,txt,asax,ashx,asmx,master,config}]
+charset = utf-8-bom
+
 [*.cs]
 
 roslynator_accessibility_modifiers = explicit
 roslynator_enum_has_flag_style = operator
 roslynator_object_creation_type_style = implicit_when_type_is_obvious
+
+# The logging message template should not vary between calls to 'LoggerExtensions.LogError(ILogger, Exception?, string?, params object?[])'
+dotnet_diagnostic.CA2254.severity = suggestion
+dotnet_diagnostic.CA1852.severity = suggestion
+
+# SCS0008: The cookie is missing 'Secure' flag. 
+dotnet_diagnostic.SCS0008.severity = suggestion
+
+# SCS0009: The cookie is missing 'HttpOnly' flag. 
+dotnet_diagnostic.SCS0009.severity = suggestion
+
+# For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogError(ILogger, Exception?, string?, params object?[])'
+dotnet_diagnostic.CA1848.severity = suggestion
+
+# Retrieve the following string(s) from a resource table instead
+dotnet_diagnostic.CA1303.severity = suggestion
+
+# Refactor your code not to use hardcoded absolute paths or URIs.
+dotnet_diagnostic.S1075.severity = suggestion
+
+# Modify 'Program.CallProtectedApiAsync(string, Token)' to call 'HttpClient.GetAsync(Uri)' instead of 'HttpClient.GetAsync(string)'
+dotnet_diagnostic.CA2234.severity = suggestion
 
 # CA5395: Action method xyz needs to specify the HTTP request kind explicitly
 dotnet_diagnostic.CA5395.severity = suggestion

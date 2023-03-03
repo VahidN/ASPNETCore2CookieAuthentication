@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceRoot}/src/ASPNETCore2CookieAuthentication.WebApp/bin/Debug/net6.0/ASPNETCore2CookieAuthentication.WebApp.dll",
+            "program": "${workspaceRoot}/src/ASPNETCore2CookieAuthentication.WebApp/bin/Debug/net7.0/ASPNETCore2CookieAuthentication.WebApp.dll",
             "args": [],
             "cwd": "${workspaceRoot}/src/ASPNETCore2CookieAuthentication.WebApp",
             "stopAtEntry": false,

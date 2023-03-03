@@ -1,9 +1,16 @@
-Cookie Authentication without ASP.NET Core Identity 6.0.102
+Cookie Authentication without ASP.NET Core Identity 7x
 ===========
+
+<p>
+  <a href="https://github.com/VahidN/ASPNETCore2CookieAuthentication">
+     <img alt="GitHub Actions status" src="https://github.com/VahidN/ASPNETCore2CookieAuthentication/workflows/.NET%20Core%20Build/badge.svg">
+  </a>
+</p>
+
 
 ![cookieauth](/src/ASPNETCore2CookieAuthentication.WebApp/wwwroot/images/cookieauth.png)
 
-A cookie based authentication sample for ASP.NET Core 6.0.102 without using the Identity system. It includes:
+A cookie based authentication sample for ASP.NET Core 7x without using the Identity system. It includes:
 
 - Users and Roles tables with a many-to-may relationship.
 - A separated EF Core data layer with enabled migrations.
