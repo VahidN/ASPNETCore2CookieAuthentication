@@ -16,7 +16,9 @@ webApp.Run();
 
 void ConfigureServices(IServiceCollection services, IConfiguration configuration)
 {
+    services.AddHttpContextAccessor();
     services.AddScoped<IUnitOfWork, ApplicationDbContext>();
+    services.AddScoped<IDeviceDetectionService, DeviceDetectionService>();
     services.AddScoped<IUsersService, UsersService>();
     services.AddScoped<IRolesService, RolesService>();
     services.AddScoped<ISecurityService, SecurityService>();

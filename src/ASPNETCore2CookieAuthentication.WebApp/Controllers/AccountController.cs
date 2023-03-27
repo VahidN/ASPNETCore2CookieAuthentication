@@ -9,24 +9,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ASPNETCore2CookieAuthentication.WebApp.Controllers;
 
-[Route("api/[controller]"), EnableCors("CorsPolicy")]
+[Route("api/[controller]")]
+[EnableCors("CorsPolicy")]
 public class AccountController : Controller
 {
     private readonly IConfiguration _configuration;
+    private readonly IDeviceDetectionService _deviceDetectionService;
     private readonly IRolesService _rolesService;
     private readonly IUsersService _usersService;
 
     public AccountController(
         IUsersService usersService,
         IRolesService rolesService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IDeviceDetectionService deviceDetectionService)
     {
         _usersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
         _rolesService = rolesService ?? throw new ArgumentNullException(nameof(rolesService));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _deviceDetectionService =
+            deviceDetectionService ?? throw new ArgumentNullException(nameof(deviceDetectionService));
     }
 
-    [AllowAnonymous, HttpPost("[action]")]
+    [AllowAnonymous]
+    [HttpPost("[action]")]
     public async Task<IActionResult> Login([FromBody] User loginUser)
     {
         if (loginUser == null)
@@ -44,14 +50,14 @@ public class AccountController : Controller
         var loginCookieExpirationDays = _configuration.GetValue("LoginCookieExpirationDays", 30);
         var cookieClaims = await createCookieClaimsAsync(user);
         await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            cookieClaims,
-            new AuthenticationProperties
-            {
-                IsPersistent = true, // "Remember Me"
-                IssuedUtc = DateTimeOffset.UtcNow,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(loginCookieExpirationDays)
-            });
+                                      CookieAuthenticationDefaults.AuthenticationScheme,
+                                      cookieClaims,
+                                      new AuthenticationProperties
+                                      {
+                                          IsPersistent = true, // "Remember Me"
+                                          IssuedUtc = DateTimeOffset.UtcNow,
+                                          ExpiresUtc = DateTimeOffset.UtcNow.AddDays(loginCookieExpirationDays),
+                                      });
 
         await _usersService.UpdateUserLastActivityDateAsync(user.Id);
 
@@ -67,6 +73,8 @@ public class AccountController : Controller
 
         // to invalidate the cookie
         identity.AddClaim(new Claim(ClaimTypes.SerialNumber, user.SerialNumber));
+        identity.AddClaim(new Claim(ClaimTypes.System, _deviceDetectionService.GetCurrentRequestDeviceDetailsHash(),
+                                    ClaimValueTypes.String));
 
         // custom data
         identity.AddClaim(new Claim(ClaimTypes.UserData, user.Id.ToString(CultureInfo.InvariantCulture)));
@@ -81,20 +89,21 @@ public class AccountController : Controller
         return new ClaimsPrincipal(identity);
     }
 
-    [AllowAnonymous, HttpGet("[action]"), HttpPost("[action]")]
+    [AllowAnonymous]
+    [HttpGet("[action]")]
+    [HttpPost("[action]")]
     public async Task<bool> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return true;
     }
 
-    [HttpGet("[action]"), HttpPost("[action]")]
-    public bool IsAuthenticated()
-    {
-        return User.Identity?.IsAuthenticated ?? false;
-    }
+    [HttpGet("[action]")]
+    [HttpPost("[action]")]
+    public bool IsAuthenticated() => User.Identity?.IsAuthenticated ?? false;
 
-    [HttpGet("[action]"), HttpPost("[action]")]
+    [HttpGet("[action]")]
+    [HttpPost("[action]")]
     public IActionResult GetUserInfo()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;

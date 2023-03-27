@@ -6,11 +6,14 @@ namespace ASPNETCore2CookieAuthentication.Services;
 
 public class CookieValidatorService : ICookieValidatorService
 {
+    private readonly IDeviceDetectionService _deviceDetectionService;
     private readonly IUsersService _usersService;
 
-    public CookieValidatorService(IUsersService usersService)
+    public CookieValidatorService(IUsersService usersService, IDeviceDetectionService deviceDetectionService)
     {
         _usersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
+        _deviceDetectionService =
+            deviceDetectionService ?? throw new ArgumentNullException(nameof(deviceDetectionService));
     }
 
     public async Task ValidateAsync(CookieValidatePrincipalContext context)
@@ -24,6 +27,13 @@ public class CookieValidatorService : ICookieValidatorService
         if (claimsIdentity?.Claims == null || !claimsIdentity.Claims.Any())
         {
             // this is not our issued cookie
+            await handleUnauthorizedRequest(context);
+            return;
+        }
+
+        if (!_deviceDetectionService.HasUserTokenValidDeviceDetails(claimsIdentity))
+        {
+            // Detected usage of an old token from a new device! Please login again!
             await handleUnauthorizedRequest(context);
             return;
         }
