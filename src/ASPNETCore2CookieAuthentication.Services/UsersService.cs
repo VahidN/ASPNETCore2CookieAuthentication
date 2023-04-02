@@ -17,26 +17,28 @@ public class UsersService : IUsersService
         _securityService = securityService ?? throw new ArgumentNullException(nameof(securityService));
     }
 
-    public ValueTask<User> FindUserAsync(int userId)
-    {
-        return _users.FindAsync(userId);
-    }
+    public ValueTask<User?> FindUserAsync(int userId) => _users.FindAsync(userId);
 
-    public Task<User> FindUserAsync(string username, string password)
+    public Task<User?> FindUserAsync(string username, string password)
     {
         var passwordHash = _securityService.GetSha256Hash(password);
         return _users.FirstOrDefaultAsync(x => x.Username == username && x.Password == passwordHash);
     }
 
-    public async Task<string> GetSerialNumberAsync(int userId)
+    public async Task<string?> GetSerialNumberAsync(int userId)
     {
         var user = await FindUserAsync(userId);
-        return user.SerialNumber;
+        return user?.SerialNumber;
     }
 
     public async Task UpdateUserLastActivityDateAsync(int userId)
     {
         var user = await FindUserAsync(userId);
+        if (user is null)
+        {
+            return;
+        }
+
         if (user.LastLoggedIn != null)
         {
             var updateLastActivityDate = TimeSpan.FromMinutes(2);

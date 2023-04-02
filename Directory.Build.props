@@ -6,6 +6,7 @@
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+                <Nullable>enable</Nullable>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>

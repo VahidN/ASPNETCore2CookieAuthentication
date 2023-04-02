@@ -69,10 +69,10 @@ public class AccountController : Controller
         var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture)));
         identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
-        identity.AddClaim(new Claim("DisplayName", user.DisplayName));
+        identity.AddClaim(new Claim("DisplayName", user.DisplayName ?? ""));
 
         // to invalidate the cookie
-        identity.AddClaim(new Claim(ClaimTypes.SerialNumber, user.SerialNumber));
+        identity.AddClaim(new Claim(ClaimTypes.SerialNumber, user.SerialNumber ?? ""));
         identity.AddClaim(new Claim(ClaimTypes.System, _deviceDetectionService.GetCurrentRequestDeviceDetailsHash(),
                                     ClaimValueTypes.String));
 

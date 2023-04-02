@@ -2,18 +2,15 @@
 
 public class User
 {
-    public User()
-    {
-        UserRoles = new HashSet<UserRole>();
-    }
+    public User() => UserRoles = new HashSet<UserRole>();
 
     public int Id { get; set; }
 
-    public string Username { get; set; }
+    public required string Username { get; set; }
 
-    public string Password { get; set; }
+    public required string Password { get; set; }
 
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -24,7 +21,7 @@ public class User
     ///     or an admin changes his Roles or stat/IsActive,
     ///     create a new `SerialNumber` GUID and store it in the DB.
     /// </summary>
-    public string SerialNumber { get; set; }
+    public string? SerialNumber { get; set; }
 
     public virtual ICollection<UserRole> UserRoles { get; set; }
 }
