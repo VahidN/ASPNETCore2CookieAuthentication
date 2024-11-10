@@ -13,13 +13,15 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
     {
         var basePath = Directory.GetCurrentDirectory();
         WriteLine($"Using `{basePath}` as the BasePath");
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile("appsettings.json")
+
+        var configuration = new ConfigurationBuilder().SetBasePath(basePath)
+            .AddJsonFile(path: "appsettings.json")
             .Build();
+
         var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString(name: "DefaultConnection");
         builder.UseSqlServer(connectionString);
+
         return new ApplicationDbContext(builder.Options);
     }
 }

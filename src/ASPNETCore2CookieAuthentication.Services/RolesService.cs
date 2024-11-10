@@ -33,7 +33,9 @@ public class RolesService : IRolesService
             from user in role.UserRoles
             where user.UserId == userId
             select role;
+
         var userRole = await userRolesQuery.FirstOrDefaultAsync();
+
         return userRole != null;
     }
 
@@ -43,7 +45,7 @@ public class RolesService : IRolesService
             where role.Name == roleName
             from user in role.UserRoles
             select user.UserId;
-        return _users.Where(user => roleUserIdsQuery.Contains(user.Id))
-            .ToListAsync();
+
+        return _users.Where(user => roleUserIdsQuery.Contains(user.Id)).ToListAsync();
     }
 }

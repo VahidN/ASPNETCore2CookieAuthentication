@@ -5,16 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ASPNETCore2CookieAuthentication.WebApp.Controllers;
 
-[Route("api/[controller]"), Authorize(Policy = CustomRoles.Admin)]
-public class MyProtectedAdminApiController : Controller
+[ApiController]
+[Route(template: "api/[controller]")]
+[Authorize(Policy = CustomRoles.Admin)]
+public class MyProtectedAdminApiController(IUsersService usersService) : ControllerBase
 {
-    private readonly IUsersService _usersService;
-
-    public MyProtectedAdminApiController(IUsersService usersService)
-    {
+    private readonly IUsersService
         _usersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
-    }
 
+    [HttpGet]
     public async Task<IActionResult> Get()
     {
         var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -22,6 +21,7 @@ public class MyProtectedAdminApiController : Controller
         var userId = userDataClaim?.Value;
 
         var id = userId is null ? 0 : int.Parse(userId, NumberStyles.Number, CultureInfo.InvariantCulture);
+
         return Ok(new
         {
             Id = 1,
