@@ -12,25 +12,23 @@ namespace ASPNETCore2CookieAuthentication.WebApp.Controllers;
 [ApiController]
 [Route(template: "api/[controller]")]
 [EnableCors(policyName: "CorsPolicy")]
-public class AccountController : ControllerBase
+public class AccountController(
+    IUsersService usersService,
+    IRolesService rolesService,
+    IConfiguration configuration,
+    IDeviceDetectionService deviceDetectionService) : ControllerBase
 {
-    private readonly IConfiguration _configuration;
-    private readonly IDeviceDetectionService _deviceDetectionService;
-    private readonly IRolesService _rolesService;
-    private readonly IUsersService _usersService;
+    private readonly IConfiguration _configuration =
+        configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-    public AccountController(IUsersService usersService,
-        IRolesService rolesService,
-        IConfiguration configuration,
-        IDeviceDetectionService deviceDetectionService)
-    {
-        _usersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
+    private readonly IDeviceDetectionService _deviceDetectionService =
+        deviceDetectionService ?? throw new ArgumentNullException(nameof(deviceDetectionService));
+
+    private readonly IRolesService
         _rolesService = rolesService ?? throw new ArgumentNullException(nameof(rolesService));
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-        _deviceDetectionService =
-            deviceDetectionService ?? throw new ArgumentNullException(nameof(deviceDetectionService));
-    }
+    private readonly IUsersService
+        _usersService = usersService ?? throw new ArgumentNullException(nameof(usersService));
 
     [AllowAnonymous]
     [HttpPost(template: "[action]")]
@@ -51,7 +49,7 @@ public class AccountController : ControllerBase
         }
 
         var loginCookieExpirationDays = _configuration.GetValue(key: "LoginCookieExpirationDays", defaultValue: 30);
-        var cookieClaims = await createCookieClaimsAsync(user);
+        var cookieClaims = await CreateCookieClaimsAsync(user);
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, cookieClaims,
             new AuthenticationProperties
@@ -66,7 +64,7 @@ public class AccountController : ControllerBase
         return Ok();
     }
 
-    private async Task<ClaimsPrincipal> createCookieClaimsAsync(User user)
+    private async Task<ClaimsPrincipal> CreateCookieClaimsAsync(User user)
     {
         var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture)));

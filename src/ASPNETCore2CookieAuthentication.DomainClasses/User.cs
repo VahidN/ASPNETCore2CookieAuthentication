@@ -2,7 +2,7 @@
 
 public class User
 {
-    public User() => UserRoles = new HashSet<UserRole>();
+    public User() => UserRoles = [];
 
     public int Id { get; set; }
 

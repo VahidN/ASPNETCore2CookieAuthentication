@@ -27,12 +27,9 @@ public class DbInitializerService(IServiceScopeFactory scopeFactory, ISecuritySe
     public void SeedData()
     {
         using var serviceScope = _scopeFactory.CreateScope();
-        using var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
 
-        if (context is null)
-        {
-            throw new InvalidOperationException(message: "context is null");
-        }
+        using var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>() ??
+                            throw new InvalidOperationException(message: "context is null");
 
         // Add default roles
         var adminRole = new Role

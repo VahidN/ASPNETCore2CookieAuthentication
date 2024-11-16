@@ -3,12 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ASPNETCore2CookieAuthentication.DataLayer.Context;
 
-public class ApplicationDbContext : DbContext, IUnitOfWork
+public class ApplicationDbContext(DbContextOptions options) : DbContext(options), IUnitOfWork
 {
-    public ApplicationDbContext(DbContextOptions options) : base(options)
-    {
-    }
-
     public virtual DbSet<User> Users { set; get; } = default!;
 
     public virtual DbSet<Role> Roles { set; get; } = default!;
